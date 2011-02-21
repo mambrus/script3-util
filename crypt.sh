@@ -7,7 +7,7 @@
 # util.crypt.sh mydir yourkeystring
 # util.crypt.sh mydir.tar.gz yourkeystring
 
-if [ -z $EBASENAME_SH ]; then
+if [ -z $CRYPT_SH ]; then
 
 CRYPT_SH="crypt.sh"
 
@@ -39,7 +39,7 @@ if [ "$CRYPT_SH" == $( ebasename $0 ) ]; then
 	source s3.user_response.sh
 
 	set -e
-	set -u
+	#set -u
 
 	if [ "X$( which openssl )" == "X" ]; then
 		set +u
