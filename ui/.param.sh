@@ -8,19 +8,19 @@ Usage: $PARAM_SH_INFO [options]
 
 Expects a line on stdin where a parameter is assigned and
 separated by an assignement operator. The parameter to be
-extracted from the line is the inargument. Default assignement
-operator is '=' but can be changed by the -a flag.
+extracted from the line is the inargument. Default assignment
+operator is '=' but can be changed with the -a flag.
 
-The script can also be used to parse a right-hand side assignement
+The script can also be used to parse a right-hand side assignment
 using the -r flag. Default is taking the left-hand side.
 
 Options:
-  -a <op>	New assignement operator (op).
+  -a <op>	Assignment operator (op).
   -r		Return right-hand side
   -h        This help
 
 Example:
-  echo "my email is zulu@domain" | $(basename $0) -a@ -r
+  echo "my email is zulu@domain now" | $(basename $0) -a@ -r "domain"
   > zulu
 
   echo "<project path="vendor/nvidia/tegra/hal" name="tegra/android"   />" | \\
@@ -55,3 +55,9 @@ EOF
 	RHS=${RHS-'no'}
 	OPER=${OPER-'='}
 
+#	if [ "X$(tty)" != "X" ] && [ "X$(tty)" != "Xnot a tty" ]; then
+#		echo "Error: This script needs input from stdin" 1>&2
+#		#echo "$(tty)"
+#		exit 1
+#	fi
+	
