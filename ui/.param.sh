@@ -32,6 +32,7 @@ EOF
 	while getopts ha:r OPTION; do
 		case $OPTION in
 		h)
+			clear
 			print_param_help $0
 			exit 0
 			echo apa
@@ -60,4 +61,4 @@ EOF
 #		#echo "$(tty)"
 #		exit 1
 #	fi
-	
+
