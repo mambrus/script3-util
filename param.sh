@@ -11,25 +11,28 @@ PARAM_SH="param.sh"
 
 function param() {
 	local PARAM_NAME=$1
+	local LINE=$(cat --)
 
 	local RHS=${RHS-'no'}
 	local OPER=${OPER-'='}
 
+	#If right-hand side parsing
 	if [ $RHS == "no" ]; then
-		sed -e "s/^.*${PARAM_NAME}[[:space:]]*${OPER}//" | \
+		#Return nothing if PARAM-string not found
+		echo "${LINE}" | \
+			egrep "${PARAM_NAME}[[:space:]]*${OPER}" > /dev/null || return 0
+		echo ${LINE} | \
+			sed -e "s/^.*${PARAM_NAME}[[:space:]]*${OPER}//" | \
 			sed -e 's/\([[:graph:]]*\)\(.*\)/\1/'
 	else
-		sed -e "s/${OPER}[[:space:]]*${PARAM_NAME}"'.*$//' | \
+		#Return nothing if PARAM-string not found
+		echo "${LINE}" | \
+			egrep "s/${OPER}[[:space:]]*${PARAM_NAME}"'.*$' > /dev/null || return 0
+		echo ${LINE} | \
+			sed -e "s/${OPER}[[:space:]]*${PARAM_NAME}"'.*$//' | \
 			sed -e 's/[[:space:]]*$//' | \
 			sed -e 's/^.*[[:space:]]\+//'
 	fi
-
-#Not as good solution follows. Can't handle whitespace properly
-#	if [ $RHS == "no" ]; then
-#		sed -e "s/^.*${PARAM_NAME}//" | \
-#			cut -f2 -d"${OPER}" | \
-#			cut -f1 -d" "
-#	fi
 }
 
 source s3.ebasename.sh
