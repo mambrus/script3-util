@@ -11,7 +11,7 @@ PARAM_SH="param.sh"
 
 function param() {
 	local PARAM_NAME=$1
-	local LINE=$(cat --)
+	local ALINE="${2}"
 
 	local RHS=${RHS-'no'}
 	local OPER=${OPER-'='}
@@ -19,16 +19,16 @@ function param() {
 	#If right-hand side parsing
 	if [ $RHS == "no" ]; then
 		#Return nothing if PARAM-string not found
-		echo "${LINE}" | \
+		echo "${ALINE}" | \
 			egrep "${PARAM_NAME}[[:space:]]*${OPER}" > /dev/null || return 0
-		echo ${LINE} | \
+		echo ${ALINE} | \
 			sed -e "s/^.*${PARAM_NAME}[[:space:]]*${OPER}//" | \
 			sed -e 's/\([[:graph:]]*\)\(.*\)/\1/'
 	else
 		#Return nothing if PARAM-string not found
-		echo "${LINE}" | \
+		echo "${ALINE}" | \
 			egrep "s/${OPER}[[:space:]]*${PARAM_NAME}"'.*$' > /dev/null || return 0
-		echo ${LINE} | \
+		echo ${ALINE} | \
 			sed -e "s/${OPER}[[:space:]]*${PARAM_NAME}"'.*$//' | \
 			sed -e 's/[[:space:]]*$//' | \
 			sed -e 's/^.*[[:space:]]\+//'
@@ -42,7 +42,10 @@ if [ "$PARAM_SH" == $( ebasename $0 ) ]; then
 	PARAM_SH_INFO=${PARAM_SH}
 	source .util.ui..param.sh
 
-	param "$@"
+	cat - | \
+	while read LINE; do
+		param "${1}" "${LINE}"
+	done
 	RC=$?
 
 	exit $RC
