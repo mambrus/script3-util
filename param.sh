@@ -2,7 +2,7 @@
 
 # Author: Michael Ambrus (ambrmi09@gmail.com)
 # 2012-11-15
-# 
+#
 # Dok.: Read corresponding file unde ./ui
 
 if [ -z $PARAM_SH ]; then

@@ -45,7 +45,7 @@ if [ "$CRYPT_SH" == $( ebasename $0 ) ]; then
 		set +u
 		ask_user_continue \
 			"Detected that opnssl isn't installed. Continue by install it fist? (Y/n)" || exit $?
-		
+
 		set -u
 		sudo apt-get install openssl
 	fi
