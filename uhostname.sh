@@ -10,7 +10,7 @@ UHOSTNAME_SH="uhostname.sh"
 # Currently based on that there has to be at least one ethernet controller
 
 function uhostname() {
-	ifconfig					| \
+	sudo ifconfig				| \
 		egrep '^eth'			| \
 		sort					| \
 		head -n1				| \
