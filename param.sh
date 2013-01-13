@@ -3,7 +3,7 @@
 # Author: Michael Ambrus (ambrmi09@gmail.com)
 # 2012-11-15
 #
-# Dok.: Read corresponding file unde ./ui
+# Documentation: Read corresponding file under ./ui
 
 if [ -z $PARAM_SH ]; then
 
@@ -20,14 +20,16 @@ function param() {
 	if [ $RHS == "no" ]; then
 		#Return nothing if PARAM-string not found
 		echo "${ALINE}" | \
-			egrep "${PARAM_NAME}[[:space:]]*${OPER}" > /dev/null || return 0
+			egrep "([[:space:]]|^)${PARAM_NAME}[[:space:]]*${OPER}" > \
+				/dev/null || return 0
 		echo ${ALINE} | \
 			sed -e "s/^.*${PARAM_NAME}[[:space:]]*${OPER}//" | \
 			sed -e 's/\([[:graph:]]*\)\(.*\)/\1/'
 	else
 		#Return nothing if PARAM-string not found
 		echo "${ALINE}" | \
-			egrep "s/${OPER}[[:space:]]*${PARAM_NAME}"'.*$' > /dev/null || return 0
+			egrep "${OPER}[[:space:]]*${PARAM_NAME}([[:space:]]|$)" > \
+				/dev/null || return 0
 		echo ${ALINE} | \
 			sed -e "s/${OPER}[[:space:]]*${PARAM_NAME}"'.*$//' | \
 			sed -e 's/[[:space:]]*$//' | \
@@ -42,11 +44,23 @@ if [ "$PARAM_SH" == $( ebasename $0 ) ]; then
 	PARAM_SH_INFO=${PARAM_SH}
 	source .util.ui..param.sh
 
-	cat - | \
-	while read LINE; do
-		param "${1}" "${LINE}"
-	done
-	RC=$?
+	NARGS=$#
+	TEXT_MASS=$(cat ${FNAME})
+
+	if [ "X${ONE_LINE_OUTPUT}" != "Xyes" ]; then
+		for (( i=1; i<=$NARGS; i++ )); do
+			param "${1}" "${TEXT_MASS}"
+			RC=$? || exit $RC
+			shift
+		done
+	else
+		(for (( i=1; i<=$NARGS; i++ )); do
+			echo -n $(param "${1}" "${TEXT_MASS}")"${FS}"
+			RC=$? || exit $RC
+			shift
+		done
+		echo) | sed -e "s/${FS}\$//"
+	fi
 
 	exit $RC
 fi
