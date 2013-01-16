@@ -41,7 +41,11 @@ Example:
      client_connection \\
      start_time
   > xeyes_23441;0;;1358092413
-  (The above example obviously requires a running xpra ression at :20 running)
+  (The above example obviously requires a running xpra session at :20 running)
+
+  cat .repo/default.xml | $(basename $0) -F";" name path
+  # Produces a list of a manifest file with a specific order of the parameters
+  # "name" and "path"
 
 EOF
 }

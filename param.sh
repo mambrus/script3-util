@@ -45,22 +45,21 @@ if [ "$PARAM_SH" == $( ebasename $0 ) ]; then
 	source .util.ui..param.sh
 
 	NARGS=$#
-	TEXT_MASS=$(cat ${FNAME})
-
-	if [ "X${ONE_LINE_OUTPUT}" != "Xyes" ]; then
-		for (( i=1; i<=$NARGS; i++ )); do
-			param "${1}" "${TEXT_MASS}"
-			RC=$? || exit $RC
-			shift
-		done
-	else
-		(for (( i=1; i<=$NARGS; i++ )); do
-			echo -n $(param "${1}" "${TEXT_MASS}")"${FS}"
-			RC=$? || exit $RC
-			shift
-		done
-		echo) | sed -e "s/${FS}\$//"
-	fi
+	ARG_ARRY=("$@")
+	cat  ${FNAME} | while read ALINE; do
+		if [ "X${ONE_LINE_OUTPUT}" != "Xyes" ]; then
+			for (( i=0; i<$NARGS; i++ )); do
+				param "${ARG_ARRY[$i]}" "${ALINE}"
+				RC=$? || exit $RC
+			done
+		else
+			(for (( i=0; i<$NARGS; i++ )); do
+				echo -n $(param "${ARG_ARRY[$i]}" "${ALINE}")"${FS}"
+				RC=$? || exit $RC
+			done
+			echo) | sed -e "s/${FS}\$//"
+		fi
+	done
 
 	exit $RC
 fi
