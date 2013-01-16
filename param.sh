@@ -11,7 +11,10 @@ PARAM_SH="param.sh"
 
 function param() {
 	local PARAM_NAME=$1
-	local ALINE="${2}"
+	local ALINE=$(echo "${2}" | \
+		sed -e 's/\([[:space:]]*<\)\(.*\)\(\/>[[:space:]]*$\)/\2/' | \
+		sed -e 's/\([[:space:]]*<[^!]\)\(.*\)\(>[[:space:]]*$\)/\2/'
+	)
 
 	local RHS=${RHS-'no'}
 	local OPER=${OPER-'='}
@@ -46,7 +49,13 @@ if [ "$PARAM_SH" == $( ebasename $0 ) ]; then
 
 	NARGS=$#
 	ARG_ARRY=("$@")
-	cat  ${FNAME} | while read ALINE; do
+	if [ "X${UNTIL_EOF=}" == "Xyes" ]; then
+		TEXT_MASS=$(cat  ${FNAME})
+		CMD="echo ${TEXT_MASS}"
+	else
+		CMD="cat  ${FNAME}"
+	fi
+	${CMD} | while read ALINE; do
 		if [ "X${ONE_LINE_OUTPUT}" != "Xyes" ]; then
 			for (( i=0; i<$NARGS; i++ )); do
 				param "${ARG_ARRY[$i]}" "${ALINE}"

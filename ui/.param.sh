@@ -3,7 +3,7 @@
 # ment for beeing included.
 
 function print_param_help() {
-			cat <<EOF
+	cat <<EOF
 Usage: $PARAM_SH_INFO [options] <parameter> [<parameter> ..]
 
 Expects a line on stdin where a parameter is assigned and
@@ -16,14 +16,18 @@ using the -r flag. Default is taking the left-hand side.
 
 Options:
   -a <op>   Assignment operator (op).
-  -r        Return right-hand side
+  -r        Variable name is right-hand side (i.e. left side of <op> is value)
   -F <FS>   Field output separator. Implicily also means parameters should be
             output on the same line. This only makes sense if scanning for more
-            parameters than one. Separator separates output, nut never ends a
-			line. If you find a separator ending a line it means last parameter
-			wasn't found. Note that field separator can be a string, sometimes
-			usable for more readable output.
+            parameters than one. Separator separates output, but never ends a
+            line. If you find a separator ending a line it means last parameter
+            wasn't found. Note that field separator can be a string, sometimes
+            usable for more readable output.
   -f <name> Read input from this file instead of stdin.
+  -E		One file each as input. Buffer until EOF and put input on one line
+            before parsing. This affects output format for multi-lined input.
+            In other words, it scans a whole file for the *first* occurance of
+            what fits a parameter declaration. See xpra example below.
   -h        This help
 
 Example:
@@ -35,7 +39,7 @@ Example:
   > vendor/nvidia/tegra/hal
 
   xpra info :20 > /tmp/test
-  $(basename $0) -f/tmp/test -F";" \\
+  $(basename $0) -E -f/tmp/test -F";" \\
      session_name \\
      clients \\
      client_connection \\
@@ -49,7 +53,7 @@ Example:
 
 EOF
 }
-	while getopts ha:rF:f: OPTION; do
+	while getopts ha:rF:f:E OPTION; do
 		case $OPTION in
 		h)
 			clear
@@ -70,6 +74,9 @@ EOF
 		f)
 			FNAME=$OPTARG
 			;;
+		E)
+			UNTIL_EOF='yes'
+			;;
 		?)
 			echo "Syntax error:" 1>&2
 			print_param_help $0 1>&2
@@ -84,6 +91,7 @@ EOF
 	OPER=${OPER-'='}
 	ONE_LINE_OUTPUT=${ONE_LINE_OUTPUT-'no'}
 	FNAME=${FNAME-'--'}
+	UNTIL_EOF=${UNTIL_EOF-'no'}
 
 	if [ $# -eq 0 ]; then
 		echo "Syntax error: At least one argument needed" 1>&2
